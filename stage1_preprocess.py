@@ -16,53 +16,76 @@ def main(target_list):
         #hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)      # 將圖像轉換為HSV色彩空間
         return  image     # 回傳ROI、原始圖片
 
-    def Statistical(channel):       # 讀取單一個通道的所有數值 並計算所有統計指標 輸入通道值 回傳所有統計指標
-        copied_list = copy.deepcopy(channel)        # deepcopy傳入的通道 以免影響原本的資料
-        arr = copied_list[copied_list != 0]     # 去除為0的像素
-        mean = np.mean(arr)     # 計算通道所有數值的平均值
-        median = np.median(arr)     # 計算通道所有數值的中位數
-        variance = np.var(arr)      # 計算通道所有數值的變異數
-        std_dev = np.std(arr)       # 計算通道所有數值的標準差
-        percentile_25 = np.percentile(arr, 25)      # 計算通道所有數值的25百分位數
-        percentile_75 = np.percentile(arr, 75)      # 計算通道所有數值的75百分位數
-        all = [mean, median, variance, std_dev, percentile_25, percentile_75]
-        return all      # 回傳所有統計指標
+    def statistical_indicator_processing(result,a):      # 轉換顏色空間 儲存所有通道的統計指標到list 輸入ROI圖片
+        if a == 'PD':
+            result1 = cv2.cvtColor(result, cv2.COLOR_BGR2HSV)
+            channel = result1[:, :, 2]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag1_value = np.median(arr)     # 計算通道所有數值的中位數
+            tag1.append(tag1_value)
 
-    def statistical_indicator_processing(result):      # 轉換顏色空間 儲存所有通道的統計指標到list 輸入ROI圖片
-        # 讀取個通道值
-        channel1 = result[:, :, 0]       # 第一個通道
-        channel2 = result[:, :, 1]        # 第二個通道
-        channel3 = result[:, :, 2]     # 第三個通道
-        # 計算通道各項統計指標
-        Statistical1 = Statistical(channel1)        # 計算第一個通道的統計指標
-        Statistical2 = Statistical(channel2)     # 計算第二個通道的統計指標
-        Statistical3 = Statistical(channel3)      # 計算第三個通道的統計指標
-        #將各項統計指標儲存到個別的list
-        hsv_h.append(Statistical1)        # 第一個通道平均值加入lsit
-        hsv_s.append(Statistical2)        # 第二個通道平均值加入lsit
-        hsv_v.append(Statistical3)        # 第三個通道平均值加入lsit
+            result2 = cv2.cvtColor(result, cv2.COLOR_BGR2YUV)
+            channel = result2[:, :, 0]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag2_value = np.percentile(arr, 75)      # 計算通道所有數值的75百分位數
+            tag2.append(tag2_value)
+
+            result3 = cv2.cvtColor(result, cv2.COLOR_BGR2XYZ)
+            channel = result3[:, :, 0]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag3_value = np.percentile(arr, 75)      # 計算通道所有數值的75百分位數
+            tag3.append(tag3_value)
+
+        if a == 'SP':
+            result1 = cv2.cvtColor(result, cv2.COLOR_BGR2HSV)
+            channel = result1[:, :, 1]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag1_value = np.percentile(arr, 75)      # 計算通道所有數值的75百分位數
+            tag1.append(tag1_value)
+
+            result2 = cv2.cvtColor(result, cv2.COLOR_BGR2YUV)
+            channel = result2[:, :, 0]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag2_value = mean = np.mean(arr)     # 計算通道所有數值的平均值
+            tag2.append(tag2_value)
+
+            result3 = cv2.cvtColor(result, cv2.COLOR_BGR2XYZ)
+            channel = result3[:, :, 0]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag3_value = np.percentile(arr, 75)      # 計算通道所有數值的75百分位數
+            tag3.append(tag3_value)
+
+        if a == 'GA':
+            result1 = cv2.cvtColor(result, cv2.COLOR_BGR2HSV)
+            channel = result1[:, :, 0]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag1_value = np.median(arr)     # 計算通道所有數值的中位數
+            tag1.append(tag1_value)
+
+            channel = result1[:, :, 1]       # 第一個通道
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag2_value = np.median(arr)     # 計算通道所有數值的中位數
+            tag2.append(tag2_value)
+
+            arr = channel[channel != 0]    # 去除為0的像素
+            tag3_value = np.percentile(arr, 75)      # 計算通道所有數值的75百分位數
+            tag3.append(tag3_value)
         
-    def excel_data(picture):      # 照片名稱、面積 加入list 輸入圖片名稱 原始圖片面積
+    def save_name(picture):      # 照片名稱、面積 加入list 輸入圖片名稱 原始圖片面積
         picture_name = os.path.splitext(picture)      # 取出照片名稱（不含位址）
         name.append(picture_name[0])        # 將名稱加入 name list
 
-    def save_excel_data(name,hsv_h,hsv_s,hsv_v):       
+    def save_excel_data(name,tag1,tag2,tag3):       
         # 儲存所有值到excel檔案當中的個別種類工作表中
         # excel column 名稱
-        hsv_h = np.array(hsv_h)       # mean,median,variance,std_dev,percentile_25,percentile_75      # mean,median,variance,std_dev,percentile_25,percentile_75
-        hsv_s = np.array(hsv_s) 
-        hsv_v = np.array(hsv_v) 
+        '''tag1 = np.array(tag1)       # mean,median,variance,std_dev,percentile_25,percentile_75
+        tag2 = np.array(tag2) 
+        tag3 = np.array(tag3)''' 
 
         filename = os.path.basename(source_path1)
-        file_path = f"stage1_excels/{a}/{filename}_color_space.xlsx"        # excel 儲存位址
-        column = ["name",
-                "hsv_h_mean","hsv_h_median","hsv_h_variance","hsv_h_std_dev","hsv_h_percentile_25","hsv_h_percentile_75",
-                "hsv_s_mean","hsv_s_median","hsv_s_variance","hsv_s_std_dev","hsv_s_percentile_25","hsv_s_percentile_75",
-                "hsv_v_mean","hsv_v_median","hsv_v_variance","hsv_v_std_dev","hsv_v_percentile_25","hsv_v_percentile_75"]
-        data = pd.DataFrame({column[0] : name,
-                            column[1]: hsv_h[:,0], column[2]: hsv_h[:,1], column[3]: hsv_h[:,2], column[4]: hsv_h[:,3], column[5]: hsv_h[:,4], column[6]: hsv_h[:,5],
-                            column[7]: hsv_s[:,0], column[8]: hsv_s[:,1], column[9]: hsv_s[:,2], column[10]: hsv_s[:,3], column[11]: hsv_s[:,4], column[12]: hsv_s[:,5],
-                            column[13]: hsv_v[:,0], column[14]: hsv_v[:,1], column[15]: hsv_v[:,2], column[16]: hsv_v[:,3], column[17]: hsv_v[:,4], column[18]: hsv_v[:,5]})       # 所有資料變成dataframe
+        file_path = f"excels/{a}/{filename}_color_space.xlsx"        # excel 儲存位址
+        column = ["name",'tag1','tag2','tag3']
+        data = pd.DataFrame({'name':name, 'tag1':tag1, 'tag2':tag2, 'tag3':tag3})       # 所有資料變成dataframe
         with pd.ExcelWriter(file_path, engine='openpyxl', mode='w') as writer:     # 設定？
             data.to_excel(writer, index=False)       # 將資料寫入excel
             print(f"{b}{a} Excel file saved.")
@@ -76,9 +99,9 @@ def main(target_list):
         for b in excels:
             target = f'stage1_data/{b}{a}' #'PD','SP',
             name = []       
-            hsv_h = []      # mean,median,variance,std_dev,percentile_25,percentile_75
-            hsv_s = []
-            hsv_v = []
+            tag1 = []      # mean,median,variance,std_dev,percentile_25,percentile_75
+            tag2 = []
+            tag3 = []
             count = 0     # 計數幾張照片
             # 讀取資料夾內的照片
             source_path1 = target       # 讀取資料源第一個資料夾
@@ -88,10 +111,11 @@ def main(target_list):
                 path2 = os.path.join(source_path1, picture)     # 結合路徑 (資料源資料夾＋物種資料夾)＋照片
                 count += 1      # 計算照片數量
                 #圖片處理
+
                 hsv_image = find_ROI(path2)       # 讀取相片選取出ROI 輸入相片路徑 回傳ROI圖片 原始圖像
-                statistical_indicator_processing(hsv_image)       # 轉換顏色空間 儲存所有通道的統計指標到list 輸入ROI圖片
-                excel_data(picture)       # 照片名稱、面積 加入list 輸入圖片名稱 原始圖片面積
+                statistical_indicator_processing(hsv_image,a)       # 轉換顏色空間 儲存所有通道的統計指標到list 輸入ROI圖片
+                save_name(picture)       # 照片名稱、面積 加入list 輸入圖片名稱 原始圖片面積
             time.sleep(0.1)  # 模拟操作耗时
             # 儲存所有值到excel檔案當中的個別種類工作表中
-            save_excel_data(name,hsv_h,hsv_s,hsv_v)         
+            save_excel_data(name,tag1,tag2,tag3)         
             print(count)    #   图片個数
