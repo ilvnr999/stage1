@@ -8,8 +8,8 @@ def main(target_list):
         name_2 = []
         R2 = []
         R2_2 = []
-        df1 = pd.read_excel(f'stage1_excels/{a}/{a}group_mean.xlsx')
-        df2 = pd.read_excel(f'stage1_excels/{a}/{a}pieces_mean.xlsx')
+        df1 = pd.read_excel(f'excels/{a}/group{a}mean.xlsx')
+        df2 = pd.read_excel(f'excels/{a}/pieces{a}mean.xlsx')
         
         alltag = df1.columns.tolist()
         for i in range(1, len(alltag)) :
@@ -33,7 +33,7 @@ def main(target_list):
             plt.xlabel('group')
             plt.ylabel('pieces')
             plt.tight_layout()
-            plt.savefig(f'stage1_chart/{a}/{tags}.png') 
+            plt.savefig(f'chart/{a}{tags}.png') 
             plt.close()
 
             # 4.线性回归方程构造
@@ -47,7 +47,7 @@ def main(target_list):
         R2_2.sort(reverse=True)
         name_2.sort(reverse=True)
         df = pd.DataFrame({"name":name_2, "R2":R2_2})
-        file_path = f'stage1_excels/{a}/{a}_RGB_R2.xlsx'     # 輸出excel檔案名稱
+        file_path = f'excels/{a}/{a}_RGB_R2.xlsx'     # 輸出excel檔案名稱
         with pd.ExcelWriter(file_path, engine = 'openpyxl', mode = 'w') as writer:
             df.to_excel(writer, index = False)
             print(f'{a} saved.')
