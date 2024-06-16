@@ -24,16 +24,16 @@ def main(target_list):
             regr.fit(X,Y)
 
             score = regr.score(X,Y)
-            print(tags,score)
+            #print(tags,score)
             # 3.模型可视化
             from matplotlib import pyplot as plt
             plt.scatter(X,Y)
             plt.plot(X, regr.predict(X), color='red')  # color='red'设置为红色
-            plt.title(f'{tags} \n{score}',fontsize=23)  # 添加标题
+            plt.title(f'{a}tag{i} \n{score}',fontsize=23)  # 添加标题
             plt.xlabel('group')
             plt.ylabel('pieces')
             plt.tight_layout()
-            plt.savefig(f'chart/{a}{tags}.png') 
+            plt.savefig(f'chart/{a}tag{i}.png') 
             plt.close()
 
             # 4.线性回归方程构造
